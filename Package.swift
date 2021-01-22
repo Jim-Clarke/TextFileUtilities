@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "TextFileUtilities",
+    platforms: [
+           .macOS(.v10_14),
+       ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
@@ -24,5 +27,14 @@ let package = Package(
         .testTarget(
             name: "TextFileUtilitiesTests",
             dependencies: ["TextFileUtilities"]),
+        
+        // With the following two targets not commented out, build fails with "no run
+        // destination".
+//        .testTarget(
+//            name: "InFileTests",
+//            dependencies: ["TextFileUtilities"]),
+//        .testTarget(
+//            name: "OutFileTests",
+//            dependencies: ["TextFileUtilities"]),
     ]
 )
