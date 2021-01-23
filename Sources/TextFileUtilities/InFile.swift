@@ -70,6 +70,10 @@ public class InFile {
     // Build an InFile that lives somewhere out there on, perhaps, the Internet.
     // The name argument is just for decoration, and the urlString's path is not
     // checked to see that it's a valid path to a file.
+    //
+    // I wouldn't expect this form of InFile to be of much use, but here it is,
+    // with minimal testing.
+    
     public init(name: String, urlString: String) throws {
         self.name = name
         if let url = URL(string: urlString) {
