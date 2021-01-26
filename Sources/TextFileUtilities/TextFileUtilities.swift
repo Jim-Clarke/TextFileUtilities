@@ -50,7 +50,7 @@ import Foundation
 // it in a FileError, with the thrown error included in the "msg" of the
 // FileError.
 
-enum FileError: Error, Equatable {
+public enum FileError: Error, Equatable {
     case failedRead(_ msg: String)
     case failedWrite(_ msg: String)
     
@@ -58,7 +58,7 @@ enum FileError: Error, Equatable {
     // say anything. The problem is that the provided implementation checks the
     // error messages for equality, and code trying to ensure standardized
     // messages would be quite fragile.
-    static func ==(lhs: FileError, rhs: FileError) -> Bool {
+    public static func ==(lhs: FileError, rhs: FileError) -> Bool {
         switch (lhs, rhs) {
         case (.failedRead, .failedRead):
             return true
@@ -87,7 +87,7 @@ enum FileError: Error, Equatable {
 // return value - a String representing a fully-qualified path to a file, but
 //      which has not yet been converted into a file URL
 
-func nameToPath(fileName name: String) -> String
+public func nameToPath(fileName name: String) -> String
 {
     // let heredir = FileManager.default.currentDirectoryPath
     let startChar = name[name.startIndex]

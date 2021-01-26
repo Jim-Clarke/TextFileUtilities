@@ -23,10 +23,52 @@ final class InFileTests: XCTestCase {
     }
     
     func testBadPermissions() {
+        // To run this test, we need a file without read permissions. File like
+        // that break the copying operations needed for repository commits and
+        // retrievals.
+        //
+        // So the test file used here is kept WITH read permission, which the
+        // code below removes programmatically before running the test and
+        // restores after the test.
+        //
+        // If you cleverly take the read permission away, thinking things are
+        // broken, the "restore the permission" step below will "restore" the
+        // read NON-permission. So don't do that.
+        
         let noreadfilename = "data.noreadpermission"  // permissions 200/-w-...
         let noreadfile = InFile(testInFileDirectory + noreadfilename)
-        XCTAssertThrowsError(try noreadfile.read(), "expected no-read-permission error") { error in
-            XCTAssertEqual(error as? FileError, .failedRead(""), "wrong error type") }
+
+        do {
+            // Retrieve existing file permissions
+            let filePath = noreadfile.url.path
+            var attribs =
+                try FileManager.default.attributesOfItem(atPath: filePath)
+            let oldPermissions = Int("\(attribs[.posixPermissions]!)")!
+            
+            // Take away all read permissions
+            let newPermissions = oldPermissions & 0b011011011
+            attribs[.posixPermissions] = newPermissions
+            try FileManager.default.setAttributes(attribs,
+                                                  ofItemAtPath: filePath)
+            
+            // Run the test
+            XCTAssertThrowsError(try noreadfile.read(),
+                                 "expected no-read-permission error")
+            {
+                error in
+                XCTAssertEqual(error as? FileError,
+                               .failedRead(""),
+                               "wrong error type")
+            }
+            
+            // Restore the original permissions
+            attribs[.posixPermissions] = oldPermissions
+            try FileManager.default.setAttributes(attribs,
+                                                  ofItemAtPath: filePath)
+        } catch {
+            XCTFail(
+            "unexpected error during InFile no-read-permissions test: \(error)")
+        }
     }
 
 

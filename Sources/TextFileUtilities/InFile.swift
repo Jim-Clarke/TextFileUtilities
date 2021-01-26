@@ -41,10 +41,10 @@ public class InFile {
     // newline unless the file gives trouble.
 
 
-    let name: String // the name the caller gave us, and probably the one to use
+    public let name: String // the name the caller gave us, and probably the one to use
         // in displayed or returned messages
     // let path: String // No! Get the path from url.path!
-    let url: URL
+    public let url: URL
     let checkURLforValidPath: Bool // If it's a non-file URL, don't do this.
 
     public var contents: String = "" // initialized to keep the compiler happy,

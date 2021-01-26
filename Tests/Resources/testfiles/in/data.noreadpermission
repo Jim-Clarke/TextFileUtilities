@@ -1,1 +1,13 @@
-Ha! ha! You can't read this.
+Surprised you can read this? You can, because the file needs read permission so
+that it can be copied to (or retrieved from) a repository.
+
+When it's being used in a unit test case, the test function first removes the
+file's read permission, then performs the test, and finally restores the
+original permissions.
+
+So please don't remove the read permissions yourself. If you do that, then when
+the test function restores the "original permissions", it will be restoring
+no-read permissions, and repository commits (and possibly other actions) will
+fail mysteriously.
+
+And thanks for reading!

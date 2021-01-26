@@ -76,10 +76,10 @@ public class OutFile {
     // https://stackoverflow.com/questions/27327067/append-text-or-data-to-text-file-in-swift
 
 
-    let name: String // the name the caller gave us, and probably the one to use
+    public let name: String // the name the caller gave us, and probably the one to use
         // in displayed or returned messages
     // let path: String // No! Get the path from url.path!
-    var url: URL
+    public var url: URL
     var output: String
     
     // A caller might want to check whether there has been output to an OutFile
