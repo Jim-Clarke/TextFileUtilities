@@ -14,6 +14,40 @@ import Foundation
 //       terminator: String,
 //       to: inout Target)
 
+// A rant about write permissions
+// -----
+// In plain old Unix, of course you can't write to a file without write
+// permission (e.g., with permissions r--r--r--), but -- surprise! -- you can
+// move a new file "on top" of the existing no-write file. Presumably this is
+// because you're actually writing the directory rather than the file, and
+// presumably I knew this in the past, but I sure did not when I was writing
+// this module, and equally surely don't like it.
+//
+// And the NSString method write(to:atomically:encoding:) is happy to overwrite
+// an "unwriteable" file if you have atomically set to true, because it achieves
+// atomicity by producing the output in a temporary file and then moving it. The
+// internal name for the "atomically" parameter is "useAuxiliaryFile", so this
+// shouldn't have surprised me.
+//
+// (To watch me learning about this, look here:
+// https://forums.swift.org/t/string-write-not-respecting-unix-permissions/44224
+// )
+//
+// Anyway, I don't like that, and I want to set atomically to true so as to
+// avoid having mangled files lying around, so OutFile's finalize() method
+// (which does the actual outputting) checks for write permission before calling
+// NSString's write().
+//
+// And here's an amazing thing: OutFile's safeWrite() method, which explicitly
+// writes to a temporary file and then moves the temporary on top of the
+// possibly existing "real" output file, does respect the lack of write
+// permission! It calls FileManager's replaceItemAt() function to do the moving,
+// so presumably FileManager shares my opinion about write permissions.
+//
+// Anyway, finalize() and safeWrite() both have comments referring back to here.
+// -----
+// End of rant.
+
 
 // You might expect to find the following stream classes and the function
 // printerr() inside the class StreamedOutFile. But we're going to need them
@@ -160,8 +194,11 @@ public class OutFile {
     // Throws a FileError if writing fails.
     
     public func finalize() throws {
+        // Please see "A rant about write permissions" near the top of this
+        // source file. Here is the place where we explicitly check write
+        // permissions.
         if FileManager.default.fileExists(atPath: url.path)
-                && !FileManager.default.isWritableFile(atPath: url.path) {
+            && !FileManager.default.isWritableFile(atPath: url.path) {
             throw FileError.failedWrite("""
 File output failed for file \"\(self.name)\"
     File does not have write permission.
@@ -226,8 +263,14 @@ The original file should be intact (but unchanged).
         let backupName = FileManager.default.displayName(atPath: self.url.path)
             + ".backup"
         do {
-            // can't use FileManager.default.moveItem(at:to:); it won't
-            // overwrite an existing file!
+            // Can't use FileManager.default.moveItem(at:to:); it won't
+            // overwrite an existing file! If the ordinary function,
+            // write(to:atomically:encoding:), worked like this, we wouldn't
+            // have to go through all the permission-checking in finalize().
+            //
+            // Please see "A rant about write permissions" near the top of this
+            // source file. Here is the place where we don't have to check
+            // write permissions.
             let newURL = try FileManager.default.replaceItemAt(self.url,
                 withItemAt: temporaryFileURL,
                 backupItemName: backupName,
