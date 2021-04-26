@@ -50,24 +50,24 @@ import Foundation
 // it in a FileError, with the thrown error included in the "msg" of the
 // FileError.
 
-public enum FileError: Error, Equatable {
+public enum FileError: Error {
     case failedRead(_ msg: String)
     case failedWrite(_ msg: String)
     
-    // We need an explicit == function, even though one is provided if we don't
-    // say anything. The problem is that the provided implementation checks the
-    // error messages for equality, and code trying to ensure standardized
-    // messages would be quite fragile.
-    public static func ==(lhs: FileError, rhs: FileError) -> Bool {
-        switch (lhs, rhs) {
-        case (.failedRead, .failedRead):
-            return true
-        case (.failedWrite, .failedWrite):
-            return true
-        default:
-            return false
-        }
-    }
+    // // We need an explicit == function, even though one is provided if we don't
+    // // say anything. The problem is that the provided implementation checks the
+    // // error messages for equality, and code trying to ensure standardized
+    // // messages would be quite fragile.
+    // public static func ==(lhs: FileError, rhs: FileError) -> Bool {
+    //     switch (lhs, rhs) {
+    //     case (.failedRead, .failedRead):
+    //         return true
+    //     case (.failedWrite, .failedWrite):
+    //         return true
+    //     default:
+    //         return false
+    //     }
+    // }
 }
 
 
