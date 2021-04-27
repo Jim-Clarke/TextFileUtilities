@@ -45,8 +45,9 @@ import XCTest
 
 final class TextFileUtilitiesTests: XCTestCase {
     
-    // If you'd like to see all the environment variables, uncomment this function
-    // and struggle through the results, buried in the printed test output.
+    // If you'd like to see all the environment variables, uncomment this
+    // function and struggle through the results, buried in the printed test
+    // output.
     
 //    func testWhereWeAre() {
 //        for (key, value) in ProcessInfo.processInfo.environment {
@@ -77,25 +78,6 @@ final class TextFileUtilitiesTests: XCTestCase {
 }
 
 
-// extension FileError: Equatable {
-//     // We need an explicit == function, even though one is provided if we don't
-//     // say anything. The problem is that the provided implementation checks the
-//     // error messages for equality, and code trying to ensure standardized
-//     // messages would be quite fragile.
-//     public static func ==(lhs: FileError, rhs: FileError) -> Bool {
-//         switch (lhs, rhs) {
-//         case (.failedRead, .failedRead):
-//             return true
-//         case (.failedWrite, .failedWrite):
-//             return true
-//         default:
-//             return false
-//         }
-//     }
-// }
-
-
-
 extension FileError: Equatable {
 
     // An explicit == function to replace the one provided. I don't want
@@ -105,34 +87,16 @@ extension FileError: Equatable {
     // message" -- presumably as specified in the test case -- is contained in
     // the actual error message produced by the code that is run in the test.
     //
-    // At one point I tried using a special test-checking case of the enum, just
-    // to carry the expected test "error message", but this required ignoring
-    // which enum case carried the real error message, and that seemed bad.
+    // But note that if you don't know what the actual error message will be,
+    // you can compare with "" and the test will succeed -- though it will only
+    // be checking the error type, not the error message.
+    //
+    // (This code appeared first in OptionScannerTests.swift.)
 
     public static func ==(lhs: FileError,
                           rhs: FileError) -> Bool {
 
-        // func longerContainsShorter(_ one: String, _ two: String) -> Bool {
-        //     // s.contains("") is false for any String s, it seems; but if either
-        //     // parameter is empty, surely the empty one is contained by the
-        //     // other.
-        //     if one == "" || two == "" {
-        //         return true
-        //     }
-        //     let oneLonger = one.count > two.count
-        //     return (oneLonger && one.contains(two))
-        //         || (!oneLonger && (two.contains(one)))
-        // }
-
         func oneContainsOther(_ dum: String, _ dee: String) -> Bool {
-            // It's possible to write a version of this function that checks the
-            // lengths of the two strings and avoids one of the two contains()
-            // calls; but the gain is an improvement of efficiency that occurs
-            // only during unit testing and is very likely minimal, while the
-            // cost is a noticeably more complicated mental effort in checking
-            // the code, so it's a net loss. (But see the commented-out function
-            // above to realize that it seduced me for a while.)
-            //
             // The last two checks, for the case where one string is empty, are
             // unavoidable because s.contains("") is false for any String s. I
             // suppose there must be a good argument for this, but not here:

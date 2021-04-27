@@ -18,8 +18,15 @@ final class InFileTests: XCTestCase {
     func testNonexistentInFile() {
         let dummyreadfilename = "data.doesnotexist"  // no such file
         let dummyreadfile = InFile(dummyreadfilename)
-        XCTAssertThrowsError(try dummyreadfile.read(), "expected no-such-file error") { error in
-            XCTAssertEqual(error as? FileError, .failedRead(""), "wrong error type") }
+        XCTAssertThrowsError(try dummyreadfile.read(), "expected no-such-file error") {
+            error in
+            XCTAssertEqual(error as? FileError,
+                           .failedRead("""
+input failed from file \"data.doesnotexist\"
+    File does not exist.
+"""),
+                           "wrong error message: \(error)")
+        }
     }
     
     func testBadPermissions() {
@@ -57,8 +64,13 @@ final class InFileTests: XCTestCase {
             {
                 error in
                 XCTAssertEqual(error as? FileError,
-                               .failedRead(""),
-                               "wrong error type")
+                               .failedRead(
+                                /* Warning! non-ASCII double and single quotes */
+"""
+“data.noreadpermission” couldn’t be opened because you don’t have permission to view it
+"""
+                               ),
+                               "wrong error message: \(error)")
             }
             
             // Restore the original permissions
@@ -103,8 +115,8 @@ final class InFileTests: XCTestCase {
     // Read two empty lines with nil newline.
     //
     // This is the test case omitted from teststrings[]. It checks that "\n" is
-    // correctly chosen, but then if nil is force-fed to contentsToLines(newline:),
-    // the process still uses "\n".
+    // correctly chosen, but then if nil is force-fed to
+    // contentsToLines(newline:), the process still uses "\n".
     
     func testTwoEmptyLinesWithNilNewline() {
         let twonewlinetestreadfilename = "data.twonewlinetest"  // no such file

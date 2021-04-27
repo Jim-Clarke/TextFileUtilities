@@ -68,7 +68,12 @@ final class OutFileTests: XCTestCase {
         // Double deregister
         XCTAssertThrowsError(try treg4.deregister(), "expected double-deregistration error") {
             error in
-            XCTAssertEqual(error as? FileError, .failedWrite(""), "wrong error type")
+            XCTAssertEqual(error as? FileError,
+                           .failedWrite("""
+deregister unregistered file \"\(treg4.name)\"
+--- possible double deregistration?
+"""),
+                           "wrong error message: \(error)")
         }
     }
     
@@ -80,7 +85,13 @@ final class OutFileTests: XCTestCase {
         let nodirwritefile = OutFile(testOutFileDirectory + baddirname + nodirwritefilename)
         XCTAssertThrowsError(try nodirwritefile.finalize(), "expected no-such-directory error") {
             error in
-            XCTAssertEqual(error as? FileError, .failedWrite(""), "wrong error type")
+            XCTAssertEqual(error as? FileError,
+                           .failedWrite(
+                            /* Warning! non-ASCII double and single quotes */
+"""
+folder “out.shouldnotexist” doesn’t exist
+"""),
+                           "wrong error message: \(error)")
         }
         XCTAssertNoThrow(try nodirwritefile.deregister())
     }
@@ -93,7 +104,14 @@ final class OutFileTests: XCTestCase {
         nowritefile.baseWrite("hi, mom")
         XCTAssertThrowsError(try nowritefile.finalize(), "expected no-write-permission error") {
             error in
-            XCTAssertEqual(error as? FileError, .failedWrite(""), "wrong error type")
+            XCTAssertEqual(error as? FileError,
+                           .failedWrite(
+                           /* Warning! non-ASCII double and single quotes */
+"""
+file \"\(nowritefile.name)\"
+    File does not have write permission
+"""),
+                           "wrong error message: \(error)")
         }
         XCTAssertNoThrow(try nowritefile.deregister())
     }
@@ -101,14 +119,21 @@ final class OutFileTests: XCTestCase {
     // Bad permissions on directory
 
     func testBadDirectoryPermissions() {
-        let nowritedir = "dir.nowritepermission/" // inside testOutFileDirectory;
+        let nowritedir = "dir.nowritepermission" // inside testOutFileDirectory;
                                                   // permissions 500/r-x...
-        let cantcreatefile = OutFile(testOutFileDirectory + nowritedir + "cantcreate")
+        // Trailing slash omitted from nowritedir to make it easier to construct
+        // expected error message for XCTAssertEqual call, below.
+        
+        let cantcreatefile = OutFile(testOutFileDirectory + nowritedir + "/" + "cantcreate")
         cantcreatefile.baseWrite("hi, mom")
         XCTAssertThrowsError(try cantcreatefile.finalize(),
                              "expected dir-no-write-permission error") {
             error in
-            XCTAssertEqual(error as? FileError, .failedWrite(""), "wrong error type")
+            XCTAssertEqual(error as? FileError,
+                           .failedWrite("""
+You don’t have permission to save the file “cantcreate” in the folder “\(nowritedir)”.
+"""),
+                           "wrong error message: \(error)")
         }
         XCTAssertNoThrow(try cantcreatefile.deregister())
     }
@@ -293,7 +318,12 @@ final class OutFileTests: XCTestCase {
         nopermsafewritefile.writeln("safe line 1")
         XCTAssertThrowsError(try nopermsafewritefile.safeWrite(),
                              "expected no-write-permission error") { error in
-            XCTAssertEqual(error as? FileError, .failedWrite(""), "wrong error type")
+            XCTAssertEqual(error as? FileError,
+                           .failedWrite("""
+File output failed for file "\(nopermsafewritefile.name)" during move from temporary file.
+The output is temporarily available in
+"""),
+                           "wrong error message: \(error)")
         }
         
         // Test safeWrite on a StreamedOutFile
@@ -303,7 +333,11 @@ final class OutFileTests: XCTestCase {
         // streamedsafewritefile.writeln("safe line 1")
         XCTAssertThrowsError(try streamedsafewritefile.safeWrite(),
                              "expected safeWrite on StreamedOutFile to fail") { error in
-            XCTAssertEqual(error as? FileError, .failedWrite(""), "wrong error type")
+            XCTAssertEqual(error as? FileError,
+                           .failedWrite("""
+Safe writing failed: not available for file \"\(streamedsafewritefile.name)\"
+"""),
+                           "wrong error message: \(error)")
         }
     }
     
