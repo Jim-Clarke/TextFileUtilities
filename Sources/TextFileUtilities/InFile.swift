@@ -49,7 +49,7 @@ public class InFile {
 
     public var contents: String = "" // initialized to keep the compiler happy,
         // -- and the user. And yes, it needs to be publicly writable too.
-    var lines = [Substring]()
+    public internal(set) var lines = [Substring]()
     
     // Make an object representing the named file. The name is relative to the
     // working directory (unless it begins with "/" or "~"), so in many cases
