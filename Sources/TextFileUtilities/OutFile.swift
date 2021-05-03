@@ -392,7 +392,7 @@ Here are all the error messages:
 }
 
 
-class StreamedOutFile: OutFile {
+public class StreamedOutFile: OutFile {
     
     // This class allows you to dress up stdout and stderr in the mechanims
     // defined by OutFile. You can just use print() directly, of course, but
