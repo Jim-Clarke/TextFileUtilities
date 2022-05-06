@@ -55,6 +55,7 @@ import Foundation
 // are.
 
 open class StdStream: TextOutputStream {
+    public init() {}
     open func write(_ string: String) {}
 }
 
