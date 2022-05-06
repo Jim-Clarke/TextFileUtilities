@@ -9,7 +9,7 @@ import Foundation
 // Don't forget that Swift has a readLine() for standard input:
 //  func readLine(strippingNewline: Bool = true) -> String?
 
-public class InFile {
+open class InFile {
 
     // An object of this class reads text from an entire file into a single
     // string, and then splits the string on newlines. What if the file is

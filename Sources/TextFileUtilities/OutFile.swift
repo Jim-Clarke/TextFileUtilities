@@ -54,16 +54,16 @@ import Foundation
 // outside it too, and they're not defined in terms of its members, so here they
 // are.
 
-public class StdStream: TextOutputStream {
-    public func write(_ string: String) {}
+open class StdStream: TextOutputStream {
+    open func write(_ string: String) {}
 }
 
-public class StdoutStream: StdStream {
-    override public func write(_ string: String) { fputs(string, stdout) }
+open class StdoutStream: StdStream {
+    override open func write(_ string: String) { fputs(string, stdout) }
 }
 
-public class StderrStream: StdStream {
-    override public func write(_ string: String) { fputs(string, stderr) }
+open class StderrStream: StdStream {
+    override open func write(_ string: String) { fputs(string, stderr) }
 }
 
 public var stderrStream = StderrStream()
@@ -76,7 +76,7 @@ public func printerr(_ line: String) {
 }
 
 
-public class OutFile {
+open class OutFile {
 
     // An object of this class writes text to a file, by preparing a single
     // string that will be the entire file contents, and writing it all at once
@@ -114,7 +114,7 @@ public class OutFile {
         // in displayed or returned messages
     // let path: String // No! Get the path from url.path!
     public var url: URL
-    var output: String
+    public var output: String
     
     // A caller might want to check whether there has been output to an OutFile
     // after the output has been saved. For example, if the file takes error
@@ -149,7 +149,7 @@ public class OutFile {
     //
     // Child classes rolling their own write techniques will override this
     // function and finalize().
-    public func baseWrite(_ message: String) {
+    open func baseWrite(_ message: String) {
         output += message
         hasBeenUsed = true
     }
@@ -392,7 +392,7 @@ Here are all the error messages:
 }
 
 
-public class StreamedOutFile: OutFile {
+open class StreamedOutFile: OutFile {
     
     // This class allows you to dress up stdout and stderr in the mechanims
     // defined by OutFile. You can just use print() directly, of course, but
@@ -415,7 +415,7 @@ public class StreamedOutFile: OutFile {
         super.init(name, msgPrefix: prefix)
     }
     
-    public override func baseWrite(_ message: String) {
+    open override func baseWrite(_ message: String) {
         // "message" is not added to "output" string.
         print(message, terminator: "", to: &stream)
         hasBeenUsed = true
