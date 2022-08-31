@@ -446,3 +446,42 @@ Safe writing failed: not available for file \"\(self.name)\"
         )
     }
 }
+
+
+open class StreamedOutString: OutFile {
+    
+    // This class allows you to use OutFile's facilities without an actual file.
+    // Insted, output goes to a String (with internal newlines), so you can
+    // write file-like code without files. The idea is to be able to write test
+    // cases without file machinery, and later translate the relevant bits to
+    // an actual application. At any rate, that's how I'm hoping it will work
+    // now (August 2022).
+    //
+    // You can do the same things with a StreamedOutFile wrapping an OutStream,
+    // but it requires careful footwork. I hope this class will be very simple.
+
+//    public var output = ""
+    
+//    public override init(_ name: String, msgPrefix prefix: String = "")
+//    {
+//        super.init(name, msgPrefix: prefix)
+//    }
+    
+    open override func baseWrite(_ message: String) {
+        output += message // using OutFile's string "output"
+        hasBeenUsed = true
+    }
+
+    public override func finalize() {
+        // We don't have to do anything, since the output has been printed on
+        // the go. However, we do need this empty function so that
+        // OutFile.finalizeAll() works properly.
+    }
+    
+    public override func safeWrite() throws {
+        throw FileError.failedWrite("""
+Safe writing failed: not available for file \"\(self.name)\"
+"""
+        )
+    }
+}

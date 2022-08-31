@@ -216,7 +216,7 @@ You don’t have permission to save the file “cantcreate” in the folder “\
     // Done testing writing to OutFile -- but without saving results
     // to the actual file system
 
-    
+
     // Test StreamedOutFile with stdout and stderr
     
     func testStreamedOutFile() {
@@ -246,7 +246,39 @@ You don’t have permission to save the file “cantcreate” in the folder “\
     
     // Done testing writing to StreamedOutFile
 
-
+    
+    // Test StreamedOutString with stdout and stderr
+    
+    func testStreamedOutString() {
+        let stdout = StreamedOutString("stdout")
+        
+        XCTAssertFalse(stdout.hasBeenUsed,
+                       "StreamedOutString with stdout before use")
+        stdout.writeln("Line 1 to stdout")
+        XCTAssertTrue(stdout.hasBeenUsed,
+                      "StreamedOutString with stdout after use")
+        stdout.finalize()
+        XCTAssertEqual(stdout.output, "Line 1 to stdout\n")
+        
+        let stderr = StreamedOutString("stderr", msgPrefix: "ERROR: ")
+        XCTAssertFalse(stderr.hasBeenUsed,
+                       "StreamedOutString with stderr before use")
+        stderr.writeln("Line 1 to stderr")
+        XCTAssertTrue(stderr.hasBeenUsed,
+                      "StreamedOutString with stderr after use")
+        stderr.finalize()
+        XCTAssertEqual(stderr.output, "ERROR: Line 1 to stderr\n")
+        
+        // Make sure finalizeAll() doesn't complain.
+        XCTAssertNoThrow(try OutFile.finalizeAll())
+        XCTAssertNoThrow(try stdout.deregister())
+        XCTAssertNoThrow(try stderr.deregister())
+        XCTAssertEqual(OutFile.outfiles.count, 0)
+    }
+    
+    // Done testing writing to StreamedOutString
+    
+    
     // Test finalizeAll()
     
     func testFinalizeAll() {
