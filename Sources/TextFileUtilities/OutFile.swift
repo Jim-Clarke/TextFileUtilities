@@ -111,8 +111,8 @@ open class OutFile {
     // https://stackoverflow.com/questions/27327067/append-text-or-data-to-text-file-in-swift
 
 
-    public let name: String // the name the caller gave us, and probably the one to use
-        // in displayed or returned messages
+    public let name: String // the name the caller gave us, and probably the
+        // one to use in displayed or returned messages
     // let path: String // No! Get the path from url.path!
     public var url: URL
     public var output: String
@@ -171,7 +171,7 @@ open class OutFile {
     }
     
     // ... preceded by this file's msgPrefix and followed by a newline.
-    public func writeln(_ message: String) {
+    public func writeln(_ message: String = "") {
         // Calling "write" instead of calling baseWrite directly.
         // output += addedMsg
         write(message + "\n")
@@ -395,7 +395,7 @@ Here are all the error messages:
 
 open class StreamedOutFile: OutFile {
     
-    // This class allows you to dress up stdout and stderr in the mechanims
+    // This class allows you to dress up stdout and stderr in the mechanisms
     // defined by OutFile. You can just use print() directly, of course, but
     // this allows you to change your mind about whether a part of your output
     // is going to a file or not, changing only the definition of your OutFile.

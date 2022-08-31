@@ -186,8 +186,10 @@ You don’t have permission to save the file “cantcreate” in the folder “\
         XCTAssertEqual(writelnFile.output, "xyhi\nxymom\n")
         writelnFile.writeln("\ndad")
         XCTAssertEqual(writelnFile.output, "xyhi\nxymom\nxy\ndad\n")
+        writelnFile.writeln() // Checking default output string "".
+        XCTAssertEqual(writelnFile.output, "xyhi\nxymom\nxy\ndad\nxy\n")
         writelnFile.write("rover")
-        XCTAssertEqual(writelnFile.output, "xyhi\nxymom\nxy\ndad\nxyrover")
+        XCTAssertEqual(writelnFile.output, "xyhi\nxymom\nxy\ndad\nxy\nxyrover")
         XCTAssertNoThrow(try writelnFile.deregister())
     }
 
